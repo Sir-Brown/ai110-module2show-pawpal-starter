@@ -101,19 +101,35 @@ After completing Morning walk (daily) and Medication (once)
 
 ## 🧪 Testing PawPal+
 
-```bash
-# Run the full test suite:
-pytest
+Run the full test suite from the project root:
 
-# Run with coverage:
-pytest --cov
+```bash
+python -m pytest
 ```
+
+The tests in `tests/test_pawpal.py` cover:
+
+- **Task basics:** `mark_complete()` changes a task's status, and adding a task to a pet increases its task count.
+- **Sorting:** tasks from different pets come back in chronological order, and today's schedule skips tasks due on other days or when there are no tasks at all.
+- **Recurrence:** completing a daily task creates a new task due the next day, and a weekly task one due 7 days later. One-time tasks create nothing, and completing a task twice does not create a duplicate.
+- **Conflict detection:** tasks sharing a date and time are flagged, whether they belong to the same pet or different pets, and a warning lists every task involved. Different times, different days and completed tasks are not flagged.
+- **Filtering:** by pet name (case-insensitive), by completion status, by both together, and an unknown pet returns an empty list.
 
 Sample test output:
 
 ```
-# Paste your pytest output here
+============================= test session starts =============================
+platform win32 -- Python 3.13.7, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Users\djain\Documents\BrownSchoolFiles\5. FAU\Courses by Semester\Fall 2026\Principles of Software Engineering\Codepath\Week 4\ai110-module2show-pawpal-starter
+plugins: anyio-4.15.1
+collected 11 items
+
+tests\test_pawpal.py ...........                                         [100%]
+
+============================= 11 passed in 0.05s ==============================
 ```
+
+**Confidence level: ★★★★☆ (4/5).** All 11 tests pass and the core behaviors (sorting, recurrence, conflict detection, filtering) are covered, including several edge cases. I did not give it 5 stars because conflict detection only matches exact times and does not catch overlapping durations.
 
 ## 📐 Smarter Scheduling
 
