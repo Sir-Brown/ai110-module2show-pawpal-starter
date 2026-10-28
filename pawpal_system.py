@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from datetime import date
+from collections import defaultdict
+from dataclasses import dataclass, field, replace
+from datetime import date, timedelta
 
 
 @dataclass(eq=False)
@@ -22,7 +23,13 @@ class Task:
 
     def next_occurrence(self) -> Task | None:
         """Return a new task for the next daily or weekly occurrence, or None for one-time tasks."""
-        raise NotImplementedError
+        if self.frequency == "daily":
+            delta = timedelta(days=1)
+        elif self.frequency == "weekly":
+            delta = timedelta(weeks=1)
+        else:
+            return None
+        return replace(self, due_date=self.due_date + delta, completed=False)
 
 
 @dataclass
@@ -93,12 +100,36 @@ class Scheduler:
         self, pet_name: str | None = None, completed: bool | None = None
     ) -> list[tuple[Pet, Task]]:
         """Return (pet, task) pairs filtered by pet name and/or completion status."""
-        raise NotImplementedError
+        results = self.owner.get_all_tasks()
+        if pet_name is not None:
+            results = [
+                (pet, task) for pet, task in results
+                if pet.name.lower() == pet_name.lower()
+            ]
+        if completed is not None:
+            results = [
+                (pet, task) for pet, task in results if task.completed == completed
+            ]
+        return results
 
     def detect_conflicts(self) -> list[str]:
-        """Return warning messages for tasks scheduled at the same time."""
-        raise NotImplementedError
+        """Return warning messages for incomplete tasks scheduled at the same date and time."""
+        slots: defaultdict[tuple[date, str], list[tuple[Pet, Task]]] = defaultdict(list)
+        for pet, task in self.owner.get_all_tasks():
+            if not task.completed:
+                slots[(task.due_date, task.time)].append((pet, task))
+        return [
+            f"Conflict on {due} at {time}: "
+            + ", ".join(f"{task.description} ({pet.name})" for pet, task in group)
+            for (due, time), group in slots.items()
+            if len(group) > 1
+        ]
 
     def mark_task_complete(self, pet: Pet, task: Task) -> None:
-        """Mark a pet's task as completed."""
+        """Mark a pet's task as completed and add its next occurrence if it recurs."""
+        if task.completed:
+            return
         task.mark_complete()
+        next_task = task.next_occurrence()
+        if next_task is not None:
+            pet.add_task(next_task)

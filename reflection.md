@@ -33,8 +33,7 @@ After an AI review of the skeleton, I made `Task` compare by identity (`eq=False
 
 **b. Tradeoffs**
 
-- Describe one tradeoff your scheduler makes.
-- Why is that tradeoff reasonable for this scenario?
+The scheduler only flags a conflict when two incomplete tasks have exactly the same date and time. It does not check whether durations overlap, so a 30-minute walk at 08:00 and a feeding at 08:15 would not be flagged, even though the walk is still going. I think this is reasonable because exact matches are simple to explain, easy to test, and never produce confusing false alarms. Overlap detection would need interval comparisons and extra decisions, such as whether back-to-back tasks count or whether two pets can be cared for at once. Essentially, it'd be harder to implement.
 
 ---
 

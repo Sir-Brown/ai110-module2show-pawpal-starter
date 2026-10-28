@@ -47,12 +47,56 @@ pip install -r requirements.txt
 Output from running `python main.py`:
 
 ```
-Today's Schedule for Jordan (2026-10-28)
+Today's Schedule for D'Jaine (2026-10-28)
 --------------------------------------------------
 07:30  Morning walk  Mochi      30 min  [high]    [ ]
 08:00  Feeding       Whiskers   10 min  [high]    [x]
+09:00  Grooming      Mochi      20 min  [low]     [ ]
 09:00  Medication    Whiskers    5 min  [high]    [ ]
+15:30  Playtime      Whiskers   15 min  [low]     [ ]
 18:00  Evening walk  Mochi      30 min  [medium]  [ ]
+18:00  Training      Mochi      15 min  [medium]  [ ]
+
+Conflict warnings
+--------------------------------------------------
+WARNING: Conflict on 2026-10-28 at 18:00: Evening walk (Mochi), Training (Mochi)
+WARNING: Conflict on 2026-10-28 at 09:00: Grooming (Mochi), Medication (Whiskers)
+
+Mochi's tasks
+--------------------------------------------------
+07:30  Morning walk  Mochi      30 min  [high]    [ ]
+09:00  Grooming      Mochi      20 min  [low]     [ ]
+18:00  Evening walk  Mochi      30 min  [medium]  [ ]
+18:00  Training      Mochi      15 min  [medium]  [ ]
+
+Incomplete tasks
+--------------------------------------------------
+07:30  Morning walk  Mochi      30 min  [high]    [ ]
+08:00  Feeding       Whiskers   10 min  [high]    [ ]  due 2026-10-29
+09:00  Grooming      Mochi      20 min  [low]     [ ]
+09:00  Medication    Whiskers    5 min  [high]    [ ]
+15:30  Playtime      Whiskers   15 min  [low]     [ ]
+18:00  Evening walk  Mochi      30 min  [medium]  [ ]
+18:00  Training      Mochi      15 min  [medium]  [ ]
+
+Completed tasks
+--------------------------------------------------
+08:00  Feeding       Whiskers   10 min  [high]    [x]
+
+Whiskers' incomplete tasks
+--------------------------------------------------
+08:00  Feeding       Whiskers   10 min  [high]    [ ]  due 2026-10-29
+09:00  Medication    Whiskers    5 min  [high]    [ ]
+15:30  Playtime      Whiskers   15 min  [low]     [ ]
+
+After completing Morning walk (daily) and Medication (once)
+--------------------------------------------------
+09:00  Grooming      Mochi      20 min  [low]     [ ]
+15:30  Playtime      Whiskers   15 min  [low]     [ ]
+18:00  Evening walk  Mochi      30 min  [medium]  [ ]
+18:00  Training      Mochi      15 min  [medium]  [ ]
+07:30  Morning walk  Mochi      30 min  [high]    [ ]  due 2026-10-29
+08:00  Feeding       Whiskers   10 min  [high]    [ ]  due 2026-10-29
 ```
 
 ## 🧪 Testing PawPal+
@@ -73,14 +117,14 @@ Sample test output:
 
 ## 📐 Smarter Scheduling
 
-> Fill in once you've implemented scheduling logic.
+| Feature | Method(s) | How it works |
+|---------|-----------|--------------|
+| Sorting by time | `Scheduler.sort_by_time()`, `Scheduler.get_todays_schedule()` | Sorts on the "HH:MM" string with a lambda key. Ties keep their original order. Today's schedule keeps only tasks due today. |
+| Filtering | `Scheduler.filter_tasks(pet_name, completed)` | Filters by pet name (case-insensitive) and/or completion status. Both filters are optional and can be combined. |
+| Conflict detection | `Scheduler.detect_conflicts()` | Groups incomplete tasks by date and time and returns a warning message for each group with more than one task. Covers same-pet and cross-pet clashes and never raises an error. |
+| Recurring tasks | `Task.next_occurrence()`, `Scheduler.mark_task_complete()` | Completing a daily or weekly task creates a copy due 1 or 7 days after the original due date. Completing the same task twice does not create a duplicate. |
 
-| Feature | Method(s) | Notes |
-|---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+**Tradeoff:** conflicts are only flagged when two tasks share the exact same date and time. Overlapping durations are not checked. See section 2b of [reflection.md](reflection.md).
 
 ## 📸 Demo Walkthrough
 
