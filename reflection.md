@@ -5,24 +5,22 @@
 **Core user actions**
 
 *Add a pet*
-- The owner enters their own info and adds one or more pets (name, species), which are stored under that owner.
+The owner enters their own info and adds one or more pets (name, species), which are stored under that owner.
 
 *Schedule a care task*
-- The owner chooses a pet and adds a task (walk, feeding, medication, appointment) with a time, duration, and priority, optionally repeating daily or weekly.
+The owner chooses a pet and adds a task (walk, feeding, medication, appointment) with a time, duration, and priority, optionally repeating daily or weekly.
 
 *View today's schedule*
-- The app combines tasks from all of the owner's pets into one list ordered by time, and warns about conflicts.
+The app combines tasks from all of the owner's pets into one list ordered by time, and warns about conflicts.
 
 
 **a. Initial design**
 
-- Briefly describe your initial UML design.
-- What classes did you include, and what responsibilities did you assign to each?
+I chose four classes. `Task` holds one care activity (description, time, duration, priority, frequency, due date, completion status). `Pet` stores a pet's name and species and owns a list of tasks. `Owner` holds a name and a list of pets and can gather every task across them. `Scheduler` takes an `Owner` and handles the logic: sorting, filtering, conflict detection, and completing recurring tasks. `Task`, `Pet` and `Owner` are dataclasses because they mostly hold data. `Scheduler` is a plain class because it holds behavior.
 
 **b. Design changes**
 
-- Did your design change during implementation?
-- If yes, describe at least one change and why you made it.
+After an AI review of the skeleton, I made `Task` compare by identity (`eq=False`) so two identical-looking tasks can't be confused when removing or completing one. I also decided that today's schedule and conflict checks must use `due_date` as well as `time`, since recurring tasks create future occurrences that shouldn't appear today or conflict with other days.
 
 ---
 
