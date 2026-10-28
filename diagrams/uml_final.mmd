@@ -1,0 +1,48 @@
+classDiagram
+    class Task {
+        +str description
+        +str time
+        +int duration_minutes
+        +str priority
+        +str frequency
+        +date due_date
+        +bool completed
+        +mark_complete() None
+        +next_occurrence() Task
+    }
+    note for Task "Compared by identity (eq=False). next_occurrence() returns None for one-time tasks."
+
+    class Pet {
+        +str name
+        +str species
+        +list~Task~ tasks
+        +add_task(task) None
+        +remove_task(task) None
+        +get_tasks() list~Task~
+    }
+
+    class Owner {
+        +str name
+        +list~Pet~ pets
+        +add_pet(pet) None
+        +get_pet(name) Pet
+        +get_all_tasks() list
+    }
+    note for Owner "get_pet() returns None if no match. get_all_tasks() returns (Pet, Task) pairs."
+
+    class Scheduler {
+        +Owner owner
+        +get_todays_schedule() list
+        +sort_by_time(tasks) list
+        +filter_tasks(pet_name, completed) list
+        +detect_conflicts() list~str~
+        +mark_task_complete(pet, task) None
+    }
+    note for Scheduler "Schedule methods work on (Pet, Task) pairs. Sorting is by due date, then time."
+
+    Owner "1" *-- "many" Pet : has
+    Pet "1" *-- "many" Task : has
+    Scheduler --> Owner : uses
+    Scheduler ..> Pet : adds next occurrence to
+    Scheduler ..> Task : sorts, filters, flags conflicts
+    Task ..> Task : creates next occurrence

@@ -28,8 +28,7 @@ After an AI review of the skeleton, I made `Task` compare by identity (`eq=False
 
 **a. Constraints and priorities**
 
-- What constraints does your scheduler consider (for example: time, priority, preferences)?
-- How did you decide which constraints mattered most?
+The scheduler considers three things: when a task is due (date and time), whether it's completed, and how often it repeats (once, daily or weekly). It orders the day by time, flags tasks that share an exact date and time, and creates the next occurrence when a recurring task is finished. Tasks also store a duration and a priority; however, they don't affect ordering or conflict detection.
 
 **b. Tradeoffs**
 
@@ -41,13 +40,16 @@ The scheduler only flags a conflict when two incomplete tasks have exactly the s
 
 **a. How you used AI**
 
-- How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
-- What kinds of prompts or questions were most helpful?
+I used Claude Code inside VS Code as a collaborator for design, implementation and testing. I worked in a propose-then-approve loop: for each phase I asked for a proposal first (what would change, and which decisions were mine to make), approved or adjusted it, and only then let it edit files. The features that helped most were multi-file edits (the logic layer, `main.py` and `app.py` changing together) and being able to run the demo, the tests and a headless Streamlit check in the terminal. The most helpful prompts asked for a proposal with explicit tradeoffs, not just "write this".
 
 **b. Judgment and verification**
 
-- Describe one moment where you did not accept an AI suggestion as-is.
-- How did you evaluate or verify what the AI suggested?
+A few moments where I didn't take a suggestion as-is:
+
+- For recurrence, the course hint says the next due date is "today + 1 day". I used `due_date + 1 day` instead, so a daily task completed late keeps its rhythm instead of skipping a day.
+- The AI offered a more compact `groupby` version of `detect_conflicts`. It needed sorting first, repeated the key and was harder to read, so I kept the simpler dictionary version.
+- I turned down overlapping-duration conflict detection because it was more complex than this project needed.
+- The AI's Phase 3 UI passed its own headless check, but when I used the app myself I noticed there was no way to mark a task complete. The AI had missed that. I caught it, and it became part of the Phase 6 UI work.
 
 ---
 
@@ -55,13 +57,11 @@ The scheduler only flags a conflict when two incomplete tasks have exactly the s
 
 **a. What you tested**
 
-- What behaviors did you test?
-- Why were these tests important?
+I tested sorting across pets, today's schedule, daily and weekly recurrence, conflicts, and filtering by pet and status. These matter because they're the behaviors the owner relies on, and several of them are where scheduling bugs usually hide.
 
 **b. Confidence**
 
-- How confident are you that your scheduler works correctly?
-- What edge cases would you test next if you had more time?
+I'm at 4 out of 5. All 11 tests pass and the core behaviors are covered, but conflict detection only catches exact time matches. Next I'd test overlapping durations, time-format validation (a time like "9:00" would sort after "10:00"), invalid priority or frequency values, and removing a task that a pet doesn't have.
 
 ---
 
@@ -69,12 +69,12 @@ The scheduler only flags a conflict when two incomplete tasks have exactly the s
 
 **a. What went well**
 
-- What part of this project are you most satisfied with?
+I'm most satisfied that the logic in `pawpal_system.py` stayed independent of the interface. The same classes worked unchanged in the CLI demo, the tests and the Streamlit app, which made each new layer easy to build and check.
 
 **b. What you would improve**
 
-- If you had another iteration, what would you improve or redesign?
+If I had another iteration, I'd use priority and duration for real: sorting by priority, detecting overlapping tasks, and suggesting the next free slot. I'd also validate the time format, make the owner's data persist between runs, and add the explanation of the plan that the scenario describes, which I didn't build.
 
 **c. Key takeaway**
 
-- What is one important thing you learned about designing systems or working with AI on this project?
+Working with a powerful AI doesn't remove the need to be the architect. It writes code quickly, but I had to decide the scope, the tradeoffs and what "good enough" meant, and I had to verify things myself, because the AI's own checks missed a gap I found by simply using the app.
