@@ -2,6 +2,18 @@
 
 ## 1. System Design
 
+**Core user actions**
+
+*Add a pet*
+- The owner enters their own info and adds one or more pets (name, species), which are stored under that owner.
+
+*Schedule a care task*
+- The owner chooses a pet and adds a task (walk, feeding, medication, appointment) with a time, duration, and priority, optionally repeating daily or weekly.
+
+*View today's schedule*
+- The app combines tasks from all of the owner's pets into one list ordered by time, and warns about conflicts.
+
+
 **a. Initial design**
 
 - Briefly describe your initial UML design.
