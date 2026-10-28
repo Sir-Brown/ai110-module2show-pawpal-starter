@@ -93,8 +93,8 @@ class Scheduler:
         return self.sort_by_time(todays)
 
     def sort_by_time(self, tasks: list[tuple[Pet, Task]]) -> list[tuple[Pet, Task]]:
-        """Return (pet, task) pairs sorted by their "HH:MM" time."""
-        return sorted(tasks, key=lambda pair: pair[1].time)
+        """Return (pet, task) pairs sorted by due date, then by "HH:MM" time."""
+        return sorted(tasks, key=lambda pair: (pair[1].due_date, pair[1].time))
 
     def filter_tasks(
         self, pet_name: str | None = None, completed: bool | None = None
